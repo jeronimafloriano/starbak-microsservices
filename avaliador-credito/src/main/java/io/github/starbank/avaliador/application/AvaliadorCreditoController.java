@@ -2,7 +2,9 @@ package io.github.starbank.avaliador.application;
 
 import io.github.starbank.avaliador.application.exception.DadosClienteNotFoundException;
 import io.github.starbank.avaliador.application.exception.ErroComunicacaoMicroServicesException;
+import io.github.starbank.avaliador.application.exception.SolicitacaoCartaoException;
 import io.github.starbank.avaliador.domain.model.DadosAvaliacao;
+import io.github.starbank.avaliador.domain.model.DadosSolicitacaoEmissaoCartao;
 import io.github.starbank.avaliador.domain.model.SituacaoCliente;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,5 +53,14 @@ public class AvaliadorCreditoController {
 
     }
 
+    @PostMapping("solicitacao-cartao")
+    public ResponseEntity solicitarCartao(DadosSolicitacaoEmissaoCartao dados){
+        try {
+            var protocoloSolicitacaoCartao = avaliadorCreditoService.solicitarEmissaoCartao(dados);
+            return ResponseEntity.ok(protocoloSolicitacaoCartao);
+        } catch (SolicitacaoCartaoException e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 
 }
