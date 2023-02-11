@@ -54,7 +54,7 @@ public class AvaliadorCreditoController {
     }
 
     @PostMapping("solicitacao-cartao")
-    public ResponseEntity solicitarCartao(DadosSolicitacaoEmissaoCartao dados){
+    public ResponseEntity solicitarCartao(@RequestBody DadosSolicitacaoEmissaoCartao dados){
         try {
             var protocoloSolicitacaoCartao = avaliadorCreditoService.solicitarEmissaoCartao(dados);
             return ResponseEntity.ok(protocoloSolicitacaoCartao);

@@ -7,14 +7,20 @@ spring:
         locator:
           enable: true
           lower-case-service-id: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/msmicroservices
+
 
 server:
   port:
-    8080
+    8082
 
 eureka:
   client:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://server-starbank:vresatasrrkebn@localhost:8761/eureka
