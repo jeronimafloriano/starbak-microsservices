@@ -21,5 +21,13 @@ mq:
   queues:
     emissao-cartoes: emissao-cartoes
 
+logging:
+  file:
+    name: ./logs/log-file.log
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 
