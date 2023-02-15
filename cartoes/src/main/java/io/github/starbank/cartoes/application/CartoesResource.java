@@ -1,7 +1,6 @@
 package io.github.starbank.cartoes.application;
 
-import io.github.starbank.cartoes.application.representation.CartaoSaveRequest;
-import io.github.starbank.cartoes.application.representation.CartoesPorClienteResponse;
+import io.github.starbank.cartoes.application.representation.CartaoDto;
 import io.github.starbank.cartoes.domain.Cartao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 public class CartoesResource {
 
     private final CartaoService cartaoService;
-    private final ClienteCartaoService clienteCartaoServicear;
+    private final ClienteCartaoService clienteCartaoService;
 
     @GetMapping
     public String status(){
@@ -25,8 +24,8 @@ public class CartoesResource {
     }
 
     @PostMapping
-    public ResponseEntity cadastrar(@RequestBody CartaoSaveRequest request){
-        Cartao cartao = request.toModel();
+    public ResponseEntity cadastrar(@RequestBody CartaoDto requestDto){
+        Cartao cartao = requestDto.toCartao();
         cartaoService.save(cartao);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -38,11 +37,11 @@ public class CartoesResource {
     }
 
     @GetMapping(params = "cpf")
-    public ResponseEntity<List<CartoesPorClienteResponse>> buscarCartoesPorCliente(
+    public ResponseEntity<List<CartaoDto>> buscarCartoesPorCliente(
             @RequestParam("cpf") String cpf){
-        var lista = clienteCartaoServicear.listarCartoesPorCpf(cpf);
+        var lista = clienteCartaoService.listarCartoesPorCpf(cpf);
         var cartoes = lista.stream()
-                                                .map(CartoesPorClienteResponse::fromModel)
+                                                .map(CartaoDto::fromClienteCartao)
                                                 .collect(Collectors.toList());
         return ResponseEntity.ok(cartoes);
     }

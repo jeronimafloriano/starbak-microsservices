@@ -1,5 +1,7 @@
 package io.github.starbank.avaliador.domain.model;
 
+import io.github.starbank.avaliador.application.representation.CartaoDto;
+import io.github.starbank.avaliador.application.representation.ClienteDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class SituacaoCliente {
-    private DadosCliente cliente;
-    private List<CartaoCliente> cartoes;
+    private ClienteDto cliente;
+    private List<CartaoDto> cartoes;
 
 }

@@ -3,7 +3,7 @@ package io.github.starbank.cartoes.infra.mqueue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.starbank.cartoes.domain.Cartao;
 import io.github.starbank.cartoes.domain.ClienteCartao;
-import io.github.starbank.cartoes.domain.DadosSolicitacaoEmissaoCartao;
+import io.github.starbank.cartoes.application.representation.EmissaoCartaoDto;
 import io.github.starbank.cartoes.infra.repository.CartaoRepository;
 import io.github.starbank.cartoes.infra.repository.ClienteCartaoRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +21,11 @@ public class EmissaoCartaoSubscriber {
     private final ClienteCartaoRepository clienteCartaoRepository;
 
     @RabbitListener(queues = "${mq.queues.emissao-cartoes}")
-    public void receberSolicitacaoEmissao(@Payload String payload){
+    public void receberSolicitacaoEmiteCartao(@Payload String payload){
         try {
             var mapper = new ObjectMapper();
 
-            DadosSolicitacaoEmissaoCartao dados = mapper.readValue(payload, DadosSolicitacaoEmissaoCartao.class);
+            EmissaoCartaoDto dados = mapper.readValue(payload, EmissaoCartaoDto.class);
             Cartao cartao = cartaoRepository.findById(dados.getIdCartao()).orElseThrow();
 
             ClienteCartao clienteCartao = new ClienteCartao();

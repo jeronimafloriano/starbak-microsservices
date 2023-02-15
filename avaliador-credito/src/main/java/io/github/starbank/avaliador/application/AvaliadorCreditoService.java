@@ -1,10 +1,11 @@
 package io.github.starbank.avaliador.application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import feign.FeignException;
 import io.github.starbank.avaliador.application.exception.DadosClienteNotFoundException;
 import io.github.starbank.avaliador.application.exception.ErroComunicacaoMicroServicesException;
 import io.github.starbank.avaliador.application.exception.SolicitacaoCartaoException;
+import io.github.starbank.avaliador.application.representation.CartaoDto;
+import io.github.starbank.avaliador.application.representation.ClienteDto;
 import io.github.starbank.avaliador.domain.model.*;
 import io.github.starbank.avaliador.infra.clients.CartoesResourceClient;
 import io.github.starbank.avaliador.infra.clients.ClienteResourceClient;
@@ -30,12 +31,12 @@ public class AvaliadorCreditoService {
 
     public SituacaoCliente obterSituacaoCliente(String cpf) throws DadosClienteNotFoundException, ErroComunicacaoMicroServicesException {
         try {
-            ResponseEntity<DadosCliente> responstaCliente = clientesClient.dadosCliente(cpf);
-            ResponseEntity<List<CartaoCliente>> respostaCartoes = cartoesClient.buscarCartoesPorCliente(cpf);
+            var dadosCliente = obtemDadosCliente(cpf);
+            var cartoesDoCliente = obtemCartoesDoCliente(cpf);
 
             return SituacaoCliente.builder()
-                    .cliente(responstaCliente.getBody())
-                    .cartoes(respostaCartoes.getBody())
+                    .cliente(dadosCliente)
+                    .cartoes(cartoesDoCliente)
                     .build();
         } catch (FeignException e){
             int status = e.status();
@@ -46,29 +47,13 @@ public class AvaliadorCreditoService {
         }
     }
 
-    public RetornoAvaliacaoCliente realizarAvaliacao(String cpf, Long renda) throws DadosClienteNotFoundException,
+    public List<CartaoDto> obtemCartoesAprovados(String cpf, Long renda) throws DadosClienteNotFoundException,
             ErroComunicacaoMicroServicesException{
         try {
-            ResponseEntity<DadosCliente> respostaCliente = clientesClient.dadosCliente(cpf);
-            ResponseEntity<List<Cartao>> respostaCartoes = cartoesClient.buscarCartoesComRendaAte(renda);
+            var cartoesDisponiveis = cartoesDisponiveisParaRendaAte(renda);
+            var dadosCliente = obtemDadosCliente(cpf);
 
-            var cartoes = respostaCartoes.getBody();
-
-            var cartoesAprovados = cartoes.stream().map(cartao -> {
-                        BigDecimal limiteBasico = cartao.getLimiteBasico();
-                        BigDecimal rendaCliente = BigDecimal.valueOf(renda);
-                        BigDecimal idade = BigDecimal.valueOf(respostaCliente.getBody().getIdade());
-
-                        var limiteAprovado = idade.divide(BigDecimal.valueOf(10)).multiply(limiteBasico);
-
-                        CartaoAprovado aprovado = new CartaoAprovado();
-                        aprovado.setCartao(cartao.getNome());
-                        aprovado.setBandeira(cartao.getBandeiraCartao());
-                        aprovado.setLimiteAprovado(limiteAprovado);
-                        return aprovado;
-                    }).collect(Collectors.toList());
-
-            return new RetornoAvaliacaoCliente(cartoesAprovados);
+            return buscaCartoesParaLimiteAprovado(dadosCliente, cartoesDisponiveis);
 
         } catch (FeignException e){
             int status = e.status();
@@ -77,6 +62,35 @@ public class AvaliadorCreditoService {
             }
             throw new ErroComunicacaoMicroServicesException(e.getMessage(), status);
         }
+    }
+
+    private ClienteDto obtemDadosCliente(String cpf){
+        ResponseEntity<ClienteDto> respostaCliente = clientesClient.dadosCliente(cpf);
+        return respostaCliente.getBody();
+    }
+
+    private List<CartaoDto> obtemCartoesDoCliente(String cpf){
+        return cartoesClient.buscarCartoesPorCliente(cpf).getBody();
+    }
+
+    private List<Cartao> cartoesDisponiveisParaRendaAte(Long renda) {
+        return cartoesClient.buscarCartoesComRendaAte(renda).getBody();
+    }
+
+    private List<CartaoDto> buscaCartoesParaLimiteAprovado(ClienteDto dadosCliente, List<Cartao> cartoesDisponiveis){
+        return cartoesDisponiveis.stream().map(cartao -> {
+            BigDecimal limiteBasico = cartao.getLimiteBasico();
+            BigDecimal idade = BigDecimal.valueOf(dadosCliente.getIdade());
+
+            var limiteAprovado = idade.divide(BigDecimal.valueOf(10)).multiply(limiteBasico);
+
+            CartaoDto aprovado = new CartaoDto();
+            aprovado.setCartao(cartao.getNome());
+            aprovado.setBandeira(cartao.getBandeiraCartao());
+            aprovado.setLimiteBasico(limiteAprovado);
+            return aprovado;
+        }).collect(Collectors.toList());
+
     }
 
     public ProtocoloSolicitacaoCartao solicitarEmissaoCartao(DadosSolicitacaoEmissaoCartao dados){

@@ -14,7 +14,6 @@ public class SecurityConfig {
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf()
-                    //.ignoringAntMatchers("/eureka/**")
                 .disable()
                 .authorizeRequests()
                 .anyRequest().authenticated()

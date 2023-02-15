@@ -3,7 +3,7 @@ package io.github.starbank.avaliador.application;
 import io.github.starbank.avaliador.application.exception.DadosClienteNotFoundException;
 import io.github.starbank.avaliador.application.exception.ErroComunicacaoMicroServicesException;
 import io.github.starbank.avaliador.application.exception.SolicitacaoCartaoException;
-import io.github.starbank.avaliador.domain.model.DadosAvaliacao;
+import io.github.starbank.avaliador.application.representation.ClienteDto;
 import io.github.starbank.avaliador.domain.model.DadosSolicitacaoEmissaoCartao;
 import io.github.starbank.avaliador.domain.model.SituacaoCliente;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +25,10 @@ public class AvaliadorCreditoController {
 
     /**
      * Consultar o microsserviço de clientes para obter os dados do cliente e
-     * depois consultar o microsserviço de cartões para obter os dados dos cartões.
+     * também consulta o microsserviço de cartões para obter os dados dos cartões do cliente.
      */
     @GetMapping(value = "/situacao-cliente", params = "cpf")
-    public ResponseEntity consultaSituacaoCliente(@RequestParam("cpf") String cpf){
+    public ResponseEntity consultaDadosECartoesDoCliente(@RequestParam("cpf") String cpf){
         try {
             SituacaoCliente situacaoCliente = avaliadorCreditoService.obterSituacaoCliente(cpf);
             return ResponseEntity.ok(situacaoCliente);
@@ -40,9 +40,9 @@ public class AvaliadorCreditoController {
     }
 
     @PostMapping
-    public ResponseEntity realizarAvaliacao(@RequestBody DadosAvaliacao dados){
+    public ResponseEntity realizarAvaliacao(@RequestBody ClienteDto dados){
         try {
-            var retornoAvaliacao = avaliadorCreditoService.realizarAvaliacao(dados.getCpf(), dados.getRenda());
+            var retornoAvaliacao = avaliadorCreditoService.obtemCartoesAprovados(dados.getCpf(), dados.getRenda());
             return ResponseEntity.ok(retornoAvaliacao);
 
         } catch (DadosClienteNotFoundException e) {

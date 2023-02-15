@@ -23,7 +23,6 @@ public class SolicitacaoCartaoPublisher {
 
     private String convertIntoJson(DadosSolicitacaoEmissaoCartao dados) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        var json = mapper.writeValueAsString(dados);
-        return json;
+        return mapper.writeValueAsString(dados);
     }
 }
