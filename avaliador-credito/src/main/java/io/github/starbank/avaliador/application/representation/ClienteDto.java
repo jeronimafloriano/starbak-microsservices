@@ -7,6 +7,6 @@ public class ClienteDto {
     private String nome;
     private Integer idade;
     private String cpf;
-    private Long renda;
+    private Long renda = 0L;
 
 }

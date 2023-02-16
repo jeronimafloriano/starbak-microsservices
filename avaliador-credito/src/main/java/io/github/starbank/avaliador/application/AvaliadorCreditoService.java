@@ -85,7 +85,7 @@ public class AvaliadorCreditoService {
             var limiteAprovado = idade.divide(BigDecimal.valueOf(10)).multiply(limiteBasico);
 
             CartaoDto aprovado = new CartaoDto();
-            aprovado.setCartao(cartao.getNome());
+            aprovado.setNome(cartao.getNome());
             aprovado.setBandeira(cartao.getBandeiraCartao());
             aprovado.setLimiteBasico(limiteAprovado);
             return aprovado;
