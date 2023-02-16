@@ -28,14 +28,14 @@ Para rodar com o docker, deverão ser realizados os seguintes comandos:
   - docker run --name starbank-gateway -p 8082:8080 -e EUREKA_SERVER=starbank-eureka --network starbank-network -d starbank-gateway
 
 
-- Criar a imagem do Clientes:
+- Criar a imagem do microsserviço Clientes:
   - docker build --tag starbank-clientes .
   - docker run --name starbankms-clientes --network starbank-network -e EUREKA_SERVER=starbank-eureka -d starbank-clientes
 
-- Criar a imagem do Cartões:
+- Criar a imagem do microsserviço Cartões:
   - docker build --tag starbank-cartoes .
   - docker run --name starbankms-cartoes --network starbank-network -e RABBITMQ_SERVER=starbankrabbitmq -e EUREKA_SERVER=starbank-eureka -d starbank-cartoes
 
-- Criar a imagem do Avaliador de Crédito:
+- Criar a imagem do microsserviço Avaliador de Crédito:
   - docker build --tag starbank-avaliador .
   - docker run --name starbankms-avaliador --network starbank-network -e RABBITMQ_SERVER=starbankrabbitmq -e EUREKA_SERVER=starbank-eureka -d starbank-avaliador
