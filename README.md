@@ -7,7 +7,7 @@ Também implementei a comunicação assíncrona utilizando o RabbitMQ para reali
 
 
 
-<img width="554" alt="image" src="https://user-images.githubusercontent.com/90730406/219190365-e5a32af1-d52f-410d-9120-ef5fb1352a15.png">
+<center><img width="554" alt="image" src="https://user-images.githubusercontent.com/90730406/219190365-e5a32af1-d52f-410d-9120-ef5fb1352a15.png"></center>
 
 
 Para rodar com o docker, deverão ser realizados os seguintes comandos:
