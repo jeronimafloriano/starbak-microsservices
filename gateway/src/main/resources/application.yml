@@ -23,4 +23,4 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      defaultZone: http://server-starbank:vresatasrrkebn@localhost:8761/eureka
+      defaultZone: http://server-starbank:vresatasrrkebn@${EUREKA_SERVER}:8761/eureka
