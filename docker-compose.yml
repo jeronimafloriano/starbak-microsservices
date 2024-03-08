@@ -1,0 +1,47 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: unless-stopped
+  eurekaserver:
+    build:
+      context: ./eurekaserver
+      dockerfile: Dockerfile
+    restart: unless-stopped
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    depends_on:
+      - eurekaserver
+    restart: unless-stopped
+  clientes:
+    build:
+      context: ./clientes
+      dockerfile: Dockerfile
+    depends_on:
+      - eurekaserver
+      - gateway
+    restart: unless-stopped
+  cartoes:
+    build:
+      context: ./cartoes
+      dockerfile: Dockerfile
+    depends_on:
+      - eurekaserver
+      - gateway
+      - rabbitmq
+    restart: unless-stopped
+  avaliador-credito:
+    build:
+      context: ./avaliador-credito
+      dockerfile: Dockerfile
+    depends_on:
+      - eurekaserver
+      - gateway
+      - rabbitmq
+    restart: unless-stopped
+  
